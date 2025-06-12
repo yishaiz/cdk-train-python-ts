@@ -2,7 +2,8 @@ from aws_cdk import (
     Stack,
     aws_s3 as s3,
     Duration,
-    CfnOutput
+    CfnOutput,
+    Fn
 )
 from constructs import Construct
 
@@ -12,15 +13,16 @@ class PyStarterStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        bucket = s3.Bucket(
-            self,
-            "PyBucket",
-            lifecycle_rules=[
-                s3.LifecycleRule(
-                    expiration=Duration.days(4),
-                )
-            ],
-        )
+        suffix = self.__initialize_suffix()
+
+        bucket = s3.Bucket(self, "PyBucket",
+                           bucket_name=f"py-starter-cool-bucket-{suffix}",
+                           lifecycle_rules=[
+                               s3.LifecycleRule(
+                                   expiration=Duration.days(3),
+                               )
+                           ],
+                           )
 
         CfnOutput(
             self,
@@ -29,13 +31,7 @@ class PyStarterStack(Stack):
             description="The name of the S3 bucket created by PyStarterStack",
         )
 
-        # print(f"Bucket created with name: {bucket.bucket_name}")
-
-        #                s3.LifecycleRule(
-        #         id="DeleteOldVersions",
-        #         noncurrent_version_expiration=aws_cdk.Duration.days(30)
-        #     )
-        # bucket_name="py-starter-bucket",
-        # versioned=True,
-        # removal_policy=aws_cdk.RemovalPolicy.DESTROY,
-        # auto_delete_objects=True
+    def __initialize_suffix(self):
+        short_stack_id = Fn.select(2, Fn.split('/', self.stack_id))
+        suffix = Fn.select(4, Fn.split('-', short_stack_id))
+        return suffix
