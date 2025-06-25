@@ -7,7 +7,6 @@ from aws_cdk import (
 )
 from constructs import Construct
 
-
 class PyStarterStack(Stack):
 
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
@@ -15,19 +14,19 @@ class PyStarterStack(Stack):
 
         suffix = self.__initialize_suffix()
 
-        bucket = s3.Bucket(self, "PyBucket",
-                           bucket_name=f"py-starter-cool-bucket-{suffix}",
-                           lifecycle_rules=[
-                               s3.LifecycleRule(
-                                   expiration=Duration.days(3),
-                               )
-                           ],
-                           )
+        self.bucket = s3.Bucket(self, "PyBucket",
+                                bucket_name=f"py-starter-cool-bucket-{suffix}",
+                                lifecycle_rules=[
+                                    s3.LifecycleRule(
+                                        expiration=Duration.days(3),
+                                    )
+                                ],
+                                )
 
         CfnOutput(
             self,
             "PyBucketName",
-            value=bucket.bucket_name,
+            value=self.bucket.bucket_name,
             description="The name of the S3 bucket created by PyStarterStack",
         )
 
@@ -35,3 +34,7 @@ class PyStarterStack(Stack):
         short_stack_id = Fn.select(2, Fn.split('/', self.stack_id))
         suffix = Fn.select(4, Fn.split('-', short_stack_id))
         return suffix
+
+    @property
+    def cool_bucket(self):
+        return self.bucket
