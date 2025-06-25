@@ -1,3 +1,5 @@
+// lib/ts-handler-stack.ts
+
 import * as cdk from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { Bucket } from 'aws-cdk-lib/aws-s3';
@@ -19,7 +21,7 @@ export class TsHandlerStack extends cdk.Stack {
       handler: 'index.handler',
       code: Code.fromInline(`
                 exports.handler = async (event) => {
-                  console.log('Event Bucket:', process.env.COOL_BUCKET_ARN)
+                  console.log('Event Bucket:', process.env.COOL_BUCKET_ARN);
                 };
             `),
       environment: {
