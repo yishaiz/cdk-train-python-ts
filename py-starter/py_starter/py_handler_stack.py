@@ -1,6 +1,3 @@
-from cgitb import handler
-
-from py_starter_stack import PyStarterStack
 from aws_cdk import (
     Stack,
     aws_s3 as s3,
